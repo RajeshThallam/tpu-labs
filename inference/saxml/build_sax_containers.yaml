@@ -1,0 +1,66 @@
+steps:
+  - id: Clone saxml repo
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: '/bin/bash' 
+    args:
+      - -c
+      - |
+          git clone https://github.com/google/saxml
+          echo _ARTIFACT_REGISTRY_PREFIX=$_ARTIFACT_REGISTRY_PREFIX
+
+  - id: Build container for saxml dev
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: '/bin/bash' 
+    dir: saxml/saxml/tools/docker
+    args:
+      - -c
+      - |
+          SAX_ROOT_PATH=$(git rev-parse --show-toplevel)
+          docker build -f Dockerfile.dev ${SAX_ROOT_PATH} -t sax-dev
+
+  - id: Build container for saxml admin
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: '/bin/bash' 
+    dir: saxml/saxml/tools/docker
+    args:
+      - -c
+      - |
+          docker build -f Dockerfile.admin . -t sax-admin
+
+  - id: Build container for saxml server
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: '/bin/bash' 
+    dir: saxml/saxml/tools/docker
+    args:
+      - -c
+      - |
+          docker build -f Dockerfile.model . -t sax-model
+
+  - id: Build container for saxutil
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: '/bin/bash' 
+    dir: saxml/saxml/tools/docker
+    args:
+      - -c
+      - |
+          docker build -f Dockerfile.util . -t sax-util
+
+  - id: Tag images 
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: '/bin/bash' 
+    args:
+      - -c
+      - |
+          docker tag sax-dev $_ARTIFACT_REGISTRY_PREFIX/sax-dev
+          docker tag sax-admin $_ARTIFACT_REGISTRY_PREFIX/sax-admin-server
+          docker tag sax-model $_ARTIFACT_REGISTRY_PREFIX/sax-model-server
+          docker tag sax-util $_ARTIFACT_REGISTRY_PREFIX/sax-util
+
+images:
+  - $_ARTIFACT_REGISTRY_PREFIX/sax-dev
+  - $_ARTIFACT_REGISTRY_PREFIX/sax-admin-server
+  - $_ARTIFACT_REGISTRY_PREFIX/sax-model-server
+  - $_ARTIFACT_REGISTRY_PREFIX/sax-util
+
+options:
+  dynamic_substitutions: true
