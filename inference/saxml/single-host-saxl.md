@@ -71,13 +71,13 @@ curl -X PATCH -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "C
 export PROJECT_ID=rthallam-demo-project
 export REGION="us"
 export DOCKER_REPO_NAME="ai-infrastructure"
-export ARTIFACT_REGISTRY_PREFIX=${REGION}"-docker.pkg.dev/"${DOCKER_REPO_NAME}"/inference"
+export ARTIFACT_REGISTRY_PREFIX=${REGION}"-docker.pkg.dev/"${PROJECT_ID}"/"${DOCKER_REPO_NAME}
 
 gcloud services enable artifactregistry.googleapis.com
 gcloud artifacts repositories create ${DOCKER_REPO_NAME} \
  --repository-format=docker \
  --location=${REGION} \
- --project=${PROJECT_ID}
+ --project=${PROJECT_ID} \
  --description="Docker repository for AI infrastructure containers"
 
 gcloud builds submit \
@@ -101,7 +101,7 @@ SAX_ADMIN_SERVER_IMAGE_NAME="us-docker.pkg.dev/cloud-tpu-images/inference/sax-ad
 SAX_MODEL_SERVER_IMAGE_NAME="us-docker.pkg.dev/cloud-tpu-images/inference/sax-model-server"
 SAX_UTIL_IMAGE_NAME="us-docker.pkg.dev/cloud-tpu-images/inference/sax-util"
 
-SAX_VERSION=v1.0.0
+SAX_VERSION=v1.1.0
 
 export SAX_ADMIN_SERVER_IMAGE_URL=${SAX_ADMIN_SERVER_IMAGE_NAME}:${SAX_VERSION}
 export SAX_MODEL_SERVER_IMAGE_URL=${SAX_MODEL_SERVER_IMAGE_NAME}:${SAX_VERSION}

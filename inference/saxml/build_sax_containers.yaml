@@ -6,6 +6,7 @@ steps:
       - -c
       - |
           git clone https://github.com/google/saxml
+          git checkout tags/v1.1.0
           echo _ARTIFACT_REGISTRY_PREFIX=$_ARTIFACT_REGISTRY_PREFIX
 
   - id: Build container for saxml dev
@@ -15,8 +16,8 @@ steps:
     args:
       - -c
       - |
-          SAX_ROOT_PATH=$(git rev-parse --show-toplevel)
-          docker build -f Dockerfile.dev ${SAX_ROOT_PATH} -t sax-dev
+          sax_root_path=$(git rev-parse --show-toplevel)
+          docker build -f Dockerfile.dev ${sax_root_path} -t sax-dev
 
   - id: Build container for saxml admin
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
